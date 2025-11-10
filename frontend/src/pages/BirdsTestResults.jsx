@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Trophy, Home, RotateCcw, CheckCircle, XCircle, Clock, Award } from 'lucide-react';
@@ -16,13 +16,20 @@ const BirdsTestResults = () => {
   const [totalPlayers, setTotalPlayers] = useState(0);
   const [saving, setSaving] = useState(true);
 
+  // Prevent duplicate saves in React StrictMode
+  const hasSaved = useRef(false);
+
   useEffect(() => {
     if (!config || !answers) {
       navigate('/birds/test');
       return;
     }
 
-    saveGameAndFetchLeaderboard();
+    // Only save once
+    if (!hasSaved.current) {
+      hasSaved.current = true;
+      saveGameAndFetchLeaderboard();
+    }
   }, []);
 
   const saveGameAndFetchLeaderboard = async () => {
