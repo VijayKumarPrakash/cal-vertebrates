@@ -141,13 +141,13 @@ const BirdsLearn = () => {
           </div>
 
           {/* Image */}
-          <div className="mb-6 rounded-lg overflow-hidden shadow-lg">
+          <div className="mb-6 rounded-lg overflow-hidden shadow-lg bg-gray-100 flex items-center justify-center">
             <img
-              src={currentBird.image_url || 'https://via.placeholder.com/800x500?text=No+Image'}
+              src={currentBird.image_url || 'https://via.placeholder.com/800x600?text=No+Image'}
               alt={currentBird.common_name}
-              className="w-full h-96 object-cover"
+              className="w-full h-[500px] object-contain"
               onError={(e) => {
-                e.target.src = 'https://via.placeholder.com/800x500?text=Image+Not+Available';
+                e.target.src = 'https://via.placeholder.com/800x600?text=Image+Not+Available&fontSize=24';
               }}
             />
           </div>

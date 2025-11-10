@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Volume2, Clock, AlertCircle } from 'lucide-react';
 import { getAllBirds } from '../api';
@@ -81,7 +81,11 @@ const BirdsTestPlay = () => {
       : currentQuestion.scientific_name;
   };
 
-  const getMultipleChoiceOptions = () => {
+  // Memoize multiple choice options to prevent reshuffling on re-render
+  const multipleChoiceOptions = useMemo(() => {
+    if (config.optionsType !== 'multiple_choice' || !currentQuestion) {
+      return [];
+    }
     const correctAnswer = getCorrectAnswer();
     const otherBirds = birds
       .filter(b => b.id !== currentQuestion.id)
@@ -91,7 +95,7 @@ const BirdsTestPlay = () => {
 
     const options = [correctAnswer, ...otherBirds].sort(() => Math.random() - 0.5);
     return options;
-  };
+  }, [currentQuestionIndex, currentQuestion?.id, config.guessType, config.optionsType]);
 
   const handleInputChange = (value) => {
     setUserAnswer(value);
@@ -190,8 +194,6 @@ const BirdsTestPlay = () => {
     );
   }
 
-  const multipleChoiceOptions = config.optionsType === 'multiple_choice' ? getMultipleChoiceOptions() : [];
-
   return (
     <div className="min-h-screen pb-8">
       {/* Header with Timer */}
@@ -233,13 +235,13 @@ const BirdsTestPlay = () => {
         <div className="card p-8">
           {/* Visual Question */}
           {(config.questionType === 'visual_only' || config.questionType === 'audio_visual') && (
-            <div className="mb-6">
+            <div className="mb-6 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
               <img
                 src={currentQuestion.image_url || 'https://via.placeholder.com/600x400?text=No+Image'}
                 alt="Bird to identify"
-                className="w-full h-96 object-cover rounded-lg shadow-lg"
+                className="w-full h-[400px] object-contain"
                 onError={(e) => {
-                  e.target.src = 'https://via.placeholder.com/600x400?text=Image+Not+Available';
+                  e.target.src = 'https://via.placeholder.com/600x400?text=Image+Not+Available&fontSize=24';
                 }}
               />
             </div>
