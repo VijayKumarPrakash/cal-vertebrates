@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ChevronLeft, ChevronRight, Volume2, MapPin, Info } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight, Volume2, VolumeX, MapPin, Info } from 'lucide-react';
 import { getAllBirds } from '../api';
 
 const BirdsLearn = () => {
@@ -11,8 +11,18 @@ const BirdsLearn = () => {
   const [error, setError] = useState('');
   const [audioPlaying, setAudioPlaying] = useState(false);
 
+  const audioRef = useRef(null);
+
   useEffect(() => {
     fetchBirds();
+
+    // Cleanup audio on unmount
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
   }, []);
 
   const fetchBirds = async () => {
@@ -29,28 +39,59 @@ const BirdsLearn = () => {
 
   const currentBird = birds[currentIndex];
 
+  const stopAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      audioRef.current = null;
+    }
+    setAudioPlaying(false);
+  };
+
   const handleNext = () => {
     if (currentIndex < birds.length - 1) {
+      stopAudio();
       setCurrentIndex(currentIndex + 1);
-      setAudioPlaying(false);
     }
   };
 
   const handlePrevious = () => {
     if (currentIndex > 0) {
+      stopAudio();
       setCurrentIndex(currentIndex - 1);
-      setAudioPlaying(false);
+    }
+  };
+
+  const toggleAudio = () => {
+    if (audioPlaying) {
+      stopAudio();
+    } else {
+      playAudio();
     }
   };
 
   const playAudio = () => {
     if (currentBird?.audio_url) {
+      // Stop any currently playing audio
+      stopAudio();
+
       const audio = new Audio(currentBird.audio_url);
+      audioRef.current = audio;
       setAudioPlaying(true);
-      audio.play();
-      audio.onended = () => setAudioPlaying(false);
+
+      audio.play().catch(err => {
+        console.error('Audio playback error:', err);
+        setAudioPlaying(false);
+      });
+
+      audio.onended = () => {
+        setAudioPlaying(false);
+        audioRef.current = null;
+      };
+
       audio.onerror = () => {
         setAudioPlaying(false);
+        audioRef.current = null;
         alert('Audio could not be played');
       };
     }
@@ -156,14 +197,22 @@ const BirdsLearn = () => {
           {currentBird.audio_url && (
             <div className="mb-6 text-center">
               <button
-                onClick={playAudio}
-                disabled={audioPlaying}
+                onClick={toggleAudio}
                 className={`btn-primary inline-flex items-center space-x-2 ${
-                  audioPlaying ? 'opacity-50 cursor-not-allowed' : ''
+                  audioPlaying ? 'bg-red-600 hover:bg-red-700' : ''
                 }`}
               >
-                <Volume2 className={`w-5 h-5 ${audioPlaying ? 'animate-pulse' : ''}`} />
-                <span>{audioPlaying ? 'Playing...' : 'Play Bird Call'}</span>
+                {audioPlaying ? (
+                  <>
+                    <VolumeX className="w-5 h-5 animate-pulse" />
+                    <span>Stop Audio</span>
+                  </>
+                ) : (
+                  <>
+                    <Volume2 className="w-5 h-5" />
+                    <span>Play Bird Call</span>
+                  </>
+                )}
               </button>
             </div>
           )}

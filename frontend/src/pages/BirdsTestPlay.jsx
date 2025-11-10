@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Volume2, Clock, AlertCircle } from 'lucide-react';
+import { Volume2, VolumeX, Clock, AlertCircle } from 'lucide-react';
 import { getAllBirds } from '../api';
 
 const BirdsTestPlay = () => {
@@ -32,6 +32,10 @@ const BirdsTestPlay = () => {
 
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
     };
   }, []);
 
@@ -117,6 +121,15 @@ const BirdsTestPlay = () => {
     setShowSuggestions(false);
   };
 
+  const stopAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      audioRef.current = null;
+    }
+    setAudioPlaying(false);
+  };
+
   const handleSubmitAnswer = (isTimeout = false) => {
     const timeTaken = Math.floor((Date.now() - questionStartTime) / 1000);
     const correctAnswer = getCorrectAnswer();
@@ -131,6 +144,9 @@ const BirdsTestPlay = () => {
     };
 
     setAnswers([...answers, answerData]);
+
+    // Stop audio when moving to next question
+    stopAudio();
 
     // Move to next question or finish
     if (currentQuestionIndex < questions.length - 1) {
@@ -160,11 +176,18 @@ const BirdsTestPlay = () => {
     });
   };
 
+  const toggleAudio = () => {
+    if (audioPlaying) {
+      stopAudio();
+    } else {
+      playAudio();
+    }
+  };
+
   const playAudio = () => {
     if (currentQuestion?.audio_url) {
-      if (audioRef.current) {
-        audioRef.current.pause();
-      }
+      // Stop any currently playing audio
+      stopAudio();
 
       const audio = new Audio(currentQuestion.audio_url);
       audioRef.current = audio;
@@ -175,9 +198,14 @@ const BirdsTestPlay = () => {
         setAudioPlaying(false);
       });
 
-      audio.onended = () => setAudioPlaying(false);
+      audio.onended = () => {
+        setAudioPlaying(false);
+        audioRef.current = null;
+      };
+
       audio.onerror = () => {
         setAudioPlaying(false);
+        audioRef.current = null;
         alert('Audio could not be played');
       };
     }
@@ -251,14 +279,22 @@ const BirdsTestPlay = () => {
           {(config.questionType === 'audio_only' || config.questionType === 'audio_visual') && (
             <div className="mb-6 text-center">
               <button
-                onClick={playAudio}
-                disabled={audioPlaying}
+                onClick={toggleAudio}
                 className={`btn-primary inline-flex items-center space-x-2 ${
-                  audioPlaying ? 'opacity-50' : ''
+                  audioPlaying ? 'bg-red-600 hover:bg-red-700' : ''
                 }`}
               >
-                <Volume2 className={`w-5 h-5 ${audioPlaying ? 'animate-pulse' : ''}`} />
-                <span>{audioPlaying ? 'Playing...' : 'Play Bird Call'}</span>
+                {audioPlaying ? (
+                  <>
+                    <VolumeX className="w-5 h-5 animate-pulse" />
+                    <span>Stop Audio</span>
+                  </>
+                ) : (
+                  <>
+                    <Volume2 className="w-5 h-5" />
+                    <span>Play Bird Call</span>
+                  </>
+                )}
               </button>
             </div>
           )}

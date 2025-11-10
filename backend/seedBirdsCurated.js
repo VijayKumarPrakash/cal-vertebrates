@@ -135,7 +135,7 @@ const curatedBirds = [
     order: 'Passeriformes',
     description: 'The American Crow is a highly intelligent, all-black bird known for problem-solving abilities and complex social behavior. They have a distinctive caw call and are common in a variety of habitats.',
     image_url: 'https://commons.wikimedia.org/wiki/Special:FilePath/American_Crow.jpg?width=1200',
-    audio_url: 'https://xeno-canto.org/496358/download',
+    audio_url: 'https://xeno-canto.org/90534/download',
     range_map_url: 'https://www.allaboutbirds.org/guide/American_Crow/maps-range',
     habitat: 'Forests, fields, urban and suburban areas',
     size: '40-53 cm length, wingspan 85-100 cm',
