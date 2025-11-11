@@ -62,6 +62,14 @@ const BirdsLearn = () => {
     }
   };
 
+  const handlePageSelect = (e) => {
+    const newIndex = parseInt(e.target.value);
+    if (newIndex !== currentIndex) {
+      stopAudio();
+      setCurrentIndex(newIndex);
+    }
+  };
+
   const toggleAudio = () => {
     if (audioPlaying) {
       stopAudio();
@@ -298,9 +306,23 @@ const BirdsLearn = () => {
               <span>Previous</span>
             </button>
 
-            <span className="text-gray-600 font-medium">
-              {currentIndex + 1} / {birds.length}
-            </span>
+            <div className="flex items-center space-x-2">
+              <label htmlFor="page-select" className="text-gray-600 font-medium text-sm">
+                Go to:
+              </label>
+              <select
+                id="page-select"
+                value={currentIndex}
+                onChange={handlePageSelect}
+                className="px-4 py-2 border border-gray-300 rounded-lg font-medium text-gray-700 bg-white shadow-sm hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all cursor-pointer"
+              >
+                {birds.map((bird, index) => (
+                  <option key={bird.id} value={index}>
+                    {index + 1}. {bird.common_name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
             <button
               onClick={handleNext}
