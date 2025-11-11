@@ -237,9 +237,8 @@ const BirdsTestPlay = () => {
               </div>
             </div>
             {config.timingType === 'timed' && (
-              <div className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${
-                timeRemaining <= 10 ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'
-              }`}>
+              <div className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${timeRemaining <= 10 ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'
+                }`}>
                 <Clock className="w-5 h-5" />
                 <span className="font-bold text-xl">{timeRemaining}s</span>
               </div>
@@ -280,9 +279,10 @@ const BirdsTestPlay = () => {
             <div className="mb-6 text-center">
               <button
                 onClick={toggleAudio}
-                className={`btn-primary inline-flex items-center space-x-2 ${
-                  audioPlaying ? 'bg-red-600 hover:bg-red-700' : ''
-                }`}
+                className={`inline-flex items-center space-x-2 px-6 py-3 font-semibold rounded-lg shadow-md transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 ${audioPlaying
+                  ? 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500'
+                  : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white focus:ring-blue-500'
+                  }`}
               >
                 {audioPlaying ? (
                   <>
@@ -320,11 +320,10 @@ const BirdsTestPlay = () => {
                   <button
                     key={index}
                     onClick={() => setUserAnswer(option)}
-                    className={`w-full p-4 text-left rounded-lg border-2 transition-all ${
-                      userAnswer === option
-                        ? 'border-blue-600 bg-blue-50'
-                        : 'border-gray-300 hover:border-blue-400'
-                    }`}
+                    className={`w-full p-4 text-left rounded-lg border-2 transition-all ${userAnswer === option
+                      ? 'border-blue-600 bg-blue-50'
+                      : 'border-gray-300 hover:border-blue-400'
+                      }`}
                   >
                     <span className="font-medium">{option}</span>
                   </button>
@@ -366,9 +365,8 @@ const BirdsTestPlay = () => {
             <button
               onClick={() => handleSubmitAnswer(false)}
               disabled={!userAnswer.trim()}
-              className={`btn-primary w-full mt-6 text-lg py-4 ${
-                !userAnswer.trim() ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
+              className={`btn-primary w-full mt-6 text-lg py-4 ${!userAnswer.trim() ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
             >
               {currentQuestionIndex < questions.length - 1 ? 'Next Question' : 'Finish Quiz'}
             </button>
