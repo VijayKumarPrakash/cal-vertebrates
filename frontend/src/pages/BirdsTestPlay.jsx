@@ -280,8 +280,10 @@ const BirdsTestPlay = () => {
             <div className="mb-6 text-center">
               <button
                 onClick={toggleAudio}
-                className={`btn-primary inline-flex items-center space-x-2 ${
-                  audioPlaying ? 'bg-red-600 hover:bg-red-700' : ''
+                className={`inline-flex items-center space-x-2 px-6 py-3 font-semibold rounded-lg shadow-md transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                  audioPlaying
+                    ? 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500'
+                    : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white focus:ring-blue-500'
                 }`}
               >
                 {audioPlaying ? (
